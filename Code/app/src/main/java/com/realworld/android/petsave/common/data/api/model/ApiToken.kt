@@ -63,5 +63,4 @@ data class ApiToken(
         expiresInSeconds != null && expiresInSeconds >= 0 &&
         accessToken != null && accessToken.isNotEmpty()
   }
-
 }

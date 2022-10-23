@@ -1,9 +1,6 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-kapt'
-
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
@@ -15,14 +12,14 @@ android {
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
     versionName "1.0"
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "com.realworld.android.petsave.HiltTestRunner"
 
     javaCompileOptions {
       annotationProcessorOptions {
         arguments += [
                 "room.schemaLocation":"$projectDir/schemas".toString(),
-                "room.incremental":"true",
-                "room.expandProjection":"true"]
+                "room.expandProjection":"true"
+        ]
       }
     }
   }
@@ -44,6 +41,23 @@ android {
   buildFeatures {
     viewBinding true
   }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+    }
+  }
+
+  sourceSets {
+    androidTest {
+      assets.srcDirs = ["src/debug/assets"]
+    }
+  }
+
+  packagingOptions {
+    exclude 'META-INF/AL2.0'
+    exclude 'META-INF/LGPL2.1'
+  }
 }
 
 dependencies {
@@ -58,8 +72,20 @@ dependencies {
 
   // Testing Dependencies
   testImplementation "junit:junit:$junit_version"
+  testImplementation "org.mockito:mockito-core:$mockito_version"
+  testImplementation "org.robolectric:robolectric:$robolectric_version"
+
+  // Instrumented tests dependencies
   androidTestImplementation "androidx.test.ext:junit:$androidx_junit_version"
   androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+
+  // Dependencies for both test and AndroidTest
+  debugImplementation "com.google.truth:truth:$google_truth_version"
+  debugImplementation "androidx.arch.core:core-testing:$androidx_core_testing_version"
+  debugImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test_version"
+  debugImplementation ("androidx.fragment:fragment-testing:$fragment_testing_version") {
+    exclude group: 'androidx.test', module: 'monitor'
+  }
 
   // TUTORIAL DEPENDENCIES HERE
 
@@ -74,14 +100,15 @@ dependencies {
   implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
   kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
+  testImplementation("com.squareup.okhttp3:mockwebserver:$mockwebserver_version")
+  androidTestImplementation("com.squareup.okhttp3:mockwebserver:$mockwebserver_version")
+
   // Cache
   implementation "androidx.room:room-runtime:$room_version"
   implementation "androidx.room:room-ktx:$room_version"
   implementation "androidx.room:room-rxjava2:$room_version"
 
   kapt "androidx.room:room-compiler:$room_version"
-
-  testImplementation "androidx.room:room-testing:$room_version"
 
   // Concurrency
   implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
@@ -92,6 +119,9 @@ dependencies {
   implementation "com.google.dagger:hilt-android:$hilt_version"
   kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
+  androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+  kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+
   // UI
   implementation "com.github.bumptech.glide:glide:$glide_version"
   kapt "com.github.bumptech.glide:compiler:$glide_version"
@@ -101,8 +131,6 @@ dependencies {
   // Navigation
   implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
   implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-
-  androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
   // Utils
   coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$desugar_jdk_libs_version"

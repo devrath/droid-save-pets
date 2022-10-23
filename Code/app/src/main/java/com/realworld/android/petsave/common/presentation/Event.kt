@@ -34,7 +34,7 @@
 
 package com.realworld.android.petsave.common.presentation
 
-class Event<out T>(private val content: T) {
+data class Event<out T>(private val content: T) {
 
   private var hasBeenHandled = false
 
